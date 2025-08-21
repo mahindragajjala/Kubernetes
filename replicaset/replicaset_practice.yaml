@@ -1,0 +1,7 @@
+apiVersion : v1
+Kind : replicas
+metadata : 
+spec :
+replicas : 3
+selector :
+template :

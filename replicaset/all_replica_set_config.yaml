@@ -1,0 +1,72 @@
+apiVersion: apps/v1         # API group and version → ReplicaSet is in apps/v1
+kind: ReplicaSet            # Kind → we are creating a ReplicaSet
+
+metadata:                   # Metadata about the ReplicaSet itself
+  name: my-replicaset       # Name of the ReplicaSet
+  namespace: default        # Namespace where RS will be created (default if not given)
+  labels:                   # Labels to identify this ReplicaSet
+    app: myapp
+    tier: frontend
+
+spec:                       # Specification of the ReplicaSet
+  replicas: 3               # Desired number of pod replicas (ReplicaSet ensures this count)
+
+  selector:                 # IMPORTANT: How ReplicaSet knows which Pods it manages
+    matchLabels:            # Equality-based matching
+      app: myapp
+      tier: frontend
+    matchExpressions:       # Set-based matching for advanced selectors
+      - key: environment
+        operator: In
+        values:
+          - dev
+          - prod
+
+  template:                 # Pod template → defines how the Pods look
+    metadata:
+      labels:               # Labels of Pods must match the selector above
+        app: myapp
+        tier: frontend
+        environment: dev
+    spec:                   # Pod spec (same as in Pod manifest)
+      containers:
+        - name: nginx-container       # Container name
+          image: nginx:1.21           # Container image
+          ports:
+            - containerPort: 80       # Port exposed inside the Pod
+          resources:                  # Resource requests and limits
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "200m"
+              memory: "256Mi"
+          livenessProbe:              # Liveness probe to restart unhealthy pods
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          readinessProbe:             # Readiness probe for traffic routing
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 5
+      nodeSelector:                   # Scheduling constraint
+        disktype: ssd
+      tolerations:                    # Allow scheduling on tainted nodes
+        - key: "critical"
+          operator: "Equal"
+          value: "true"
+          effect: "NoSchedule"
+
+---
+# Notes:
+# - "replicas" ensures the exact number of Pods are running.
+# - "selector" defines which Pods belong to this ReplicaSet.
+# - "template" defines the Pod specification (must match selector labels).
+# - If a Pod is deleted manually → RS creates a new one automatically.
+# - If replicas are increased → RS creates more Pods.
+# - If replicas are decreased → RS terminates extra Pods.
+# - Rolling updates are NOT directly supported by ReplicaSet; instead Deployment is used.

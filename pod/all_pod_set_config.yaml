@@ -1,0 +1,72 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: myapp-pod          # Pod name (unique within namespace)
+  labels:                  # Labels to group/manage Pod
+    app: myapp
+    tier: backend
+
+spec:                      # <-- Main "recipe" of the Pod
+  restartPolicy: Always    # Restart behavior (Always, OnFailure, Never)
+  nodeSelector:            # Scheduling rule (place Pod on specific node)
+    disktype: ssd
+
+  containers:
+    - name: myapp-container          # Container name
+      image: nginx:latest            # Docker image to run
+      imagePullPolicy: IfNotPresent  # When to pull the image
+
+      ports:                         # Expose container ports
+        - containerPort: 80
+          name: http
+        - containerPort: 443
+          name: https
+
+      env:                           # Environment variables
+        - name: ENVIRONMENT
+          value: production
+        - name: API_KEY
+          valueFrom:
+            secretKeyRef:            # Pull value from a Secret
+              name: mysecret
+              key: apikey
+
+      resources:                     # Resource requests/limits
+        requests:
+          memory: "128Mi"
+          cpu: "250m"
+        limits:
+          memory: "256Mi"
+          cpu: "500m"
+
+      volumeMounts:                  # Mount storage volumes
+        - name: app-storage
+          mountPath: /usr/share/nginx/html
+
+      livenessProbe:                 # Health check (restart if fails)
+        httpGet:
+          path: /
+          port: 80
+        initialDelaySeconds: 5
+        periodSeconds: 10
+
+      readinessProbe:                # Health check (ready for traffic)
+        httpGet:
+          path: /
+          port: 80
+        initialDelaySeconds: 3
+        periodSeconds: 5
+
+  volumes:                           # Volumes shared across containers
+    - name: app-storage
+      emptyDir: {}                   # Temporary empty directory
+
+  affinity:                          # Advanced scheduling rules
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: disktype
+                operator: In
+                values:
+                  - ssd

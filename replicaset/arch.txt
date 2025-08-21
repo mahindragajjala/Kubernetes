@@ -1,0 +1,15 @@
+a king must speak
+ApiVersion
+kind
+metadata
+spec
+
+In Spec - RST[restart]
+Replicas
+Selector
+Template
+
+Template - describes about the pods
+MS
+metadata
+spec
