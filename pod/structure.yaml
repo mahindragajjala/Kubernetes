@@ -31,3 +31,9 @@ spec :
        volume :
        livenessProbe :
        readinessProbe :
+
+
+# pod spec - three tiers 
+# NIP = N - NAME , I - IMAGE , P - PORT
+# ERVLR = E - ENV , R - RESOURCES , V - VOLUME , L - LIVENESS PROBE , R - READNESS PROBE
+# VLR = V - Volumes, L -  Node,R - Restart

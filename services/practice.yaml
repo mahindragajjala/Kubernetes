@@ -1,0 +1,35 @@
+#service
+apiVersion: v1
+kind: service
+metadata: 
+  name: frontend_service
+spec:
+  type:ClusterIP
+  selector:
+    app: frontend
+  ports:
+  - port: 80 
+    targetPort: 80
+
+    
+
+#depolyment
+apiVersion: v1
+kind: depolyment
+metadata: 
+  name: "frontend_depolyment"
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+    containers:
+    - name: frontend
+      image: nginx:latest
+      ports:
+      - containerPort: 80

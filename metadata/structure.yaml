@@ -1,0 +1,8 @@
+metadata:
+  name: 5g
+  namespace: dev
+  labels:
+    environment: dev
+    team: developers
+  annotations:
+    description: "developers "

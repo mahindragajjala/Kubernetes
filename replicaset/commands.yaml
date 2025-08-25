@@ -1,0 +1,72 @@
+replicaset-commands:
+  basic:
+    - name: "List all ReplicaSets"
+      command: "kubectl get rs"
+      variations:
+        - "kubectl get rs -o wide"
+        - "kubectl get rs --all-namespaces"
+
+    - name: "Describe a ReplicaSet"
+      command: "kubectl describe rs <replicaset-name>"
+
+    - name: "Create a ReplicaSet"
+      command: "kubectl apply -f replicaset.yaml"
+      alternative: "kubectl create -f replicaset.yaml"
+
+    - name: "Delete a ReplicaSet"
+      command: "kubectl delete rs <replicaset-name>"
+      alternative: "kubectl delete -f replicaset.yaml"
+
+    - name: "View ReplicaSet YAML"
+      command: "kubectl get rs <replicaset-name> -o yaml"
+
+  intermediate:
+    - name: "Scale ReplicaSet"
+      commands:
+        - "kubectl scale rs <replicaset-name> --replicas=5"
+        - "kubectl scale -f replicaset.yaml --replicas=3"
+
+    - name: "Update image of ReplicaSet (rolling update style)"
+      command: |
+        kubectl set image rs/<replicaset-name> <container-name>=nginx:1.25
+
+    - name: "View pods managed by ReplicaSet"
+      commands:
+        - "kubectl get pods --selector=app=myapp"
+        - "kubectl get pods -l app=myapp"
+
+    - name: "Delete pods but keep ReplicaSet alive"
+      command: "kubectl delete pod <pod-name>"
+      note: "ReplicaSet automatically recreates the deleted pod"
+
+  advanced:
+    - name: "Patch a ReplicaSet"
+      command: |
+        kubectl patch rs <replicaset-name> -p '{
+          "spec":{"replicas":10}
+        }'
+
+    - name: "Edit a ReplicaSet (in place)"
+      command: "kubectl edit rs <replicaset-name>"
+
+    - name: "View events related to ReplicaSet"
+      command: "kubectl get events --sort-by='.metadata.creationTimestamp'"
+
+    - name: "Apply labels to a ReplicaSet"
+      command: "kubectl label rs <replicaset-name> tier=backend"
+
+    - name: "Filter ReplicaSets with label selector"
+      commands:
+        - "kubectl get rs -l app=frontend"
+        - "kubectl delete rs -l env=dev"
+
+    - name: "Get ReplicaSet resource usage"
+      commands:
+        - "kubectl top rs <replicaset-name>"
+        - "kubectl top rs"
+
+    - name: "Replace ReplicaSet with new config"
+      command: "kubectl replace -f replicaset.yaml"
+
+    - name: "Forcefully delete ReplicaSet and its pods"
+      command: "kubectl delete rs <replicaset-name> --cascade=foreground"

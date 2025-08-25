@@ -1,0 +1,83 @@
+pod-commands:
+  basic:
+    - name: "List all pods"
+      command: "kubectl get pods"
+      variations:
+        - "kubectl get pods -o wide"
+        - "kubectl get pods --all-namespaces"
+
+    - name: "Describe a pod"
+      command: "kubectl describe pod <pod-name>"
+
+    - name: "Create a pod"
+      command: "kubectl apply -f pod.yaml"
+      alternative: "kubectl create -f pod.yaml"
+
+    - name: "Delete a pod"
+      command: "kubectl delete pod <pod-name>"
+      alternative: "kubectl delete -f pod.yaml"
+
+    - name: "View pod logs"
+      command: "kubectl logs <pod-name>"
+      variations:
+        - "kubectl logs -f <pod-name>   # follow logs"
+        - "kubectl logs <pod-name> -c <container-name>   # for multi-container pod"
+
+  intermediate:
+    - name: "Exec into pod"
+      command: "kubectl exec -it <pod-name> -- bash"
+      variations:
+        - "kubectl exec -it <pod-name> -- sh"
+        - "kubectl exec <pod-name> -- ls /app"
+
+    - name: "Port forward pod"
+      command: "kubectl port-forward <pod-name> 8080:80"
+
+    - name: "Copy files to/from pod"
+      commands:
+        - "kubectl cp localfile <pod-name>:/path/in/pod"
+        - "kubectl cp <pod-name>:/path/in/pod localfile"
+
+    - name: "Get pod YAML"
+      command: "kubectl get pod <pod-name> -o yaml"
+
+  advanced:
+    - name: "Debug a pod"
+      commands:
+        - "kubectl debug pod/<pod-name> -it --image=busybox"
+        - "kubectl debug node/<node-name>"
+
+    - name: "Patch a pod"
+      command: |
+        kubectl patch pod <pod-name> -p '{
+          "spec":{"containers":[{"name":"nginx","image":"nginx:latest"}]}
+        }'
+
+    - name: "Scale pods (via deployment)"
+      command: "kubectl scale deployment <deployment-name> --replicas=5"
+
+    - name: "Get pod events"
+      command: "kubectl get events --sort-by='.metadata.creationTimestamp'"
+
+    - name: "Label a pod"
+      command: "kubectl label pod <pod-name> env=production"
+
+    - name: "Filter pods with selector"
+      commands:
+        - "kubectl get pods -l env=production"
+        - "kubectl delete pods -l app=frontend"
+
+    - name: "Get pod resource usage"
+      commands:
+        - "kubectl top pod <pod-name>"
+        - "kubectl top pods"
+
+    - name: "Evict/Delete pod"
+      commands:
+        - "kubectl drain <node-name> --pod-selector=app=frontend"
+        - "kubectl delete pod <pod-name> --force --grace-period=0"
+
+    - name: "Test pod networking"
+      commands:
+        - "kubectl exec -it <pod-name> -- ping <another-pod-ip>"
+        - "kubectl exec -it <pod-name> -- curl http://<service-name>"

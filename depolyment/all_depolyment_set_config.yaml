@@ -1,0 +1,115 @@
+apiVersion: apps/v1            # 1. API version for Deployment objects
+kind: Deployment               # 2. Kind specifies that this is a Deployment
+metadata:                      # 3. Metadata about the deployment
+  name: my-deployment          # Name of the Deployment
+  namespace: default           # Namespace where this Deployment will reside
+  labels:                      # Labels to categorize Deployment
+    app: my-app
+    environment: dev
+  annotations:                 # Optional metadata for tools/management
+    description: "My first Deployment"
+
+spec:                          # 4. Spec defines the desired state of the Deployment
+  replicas: 3                  # Number of Pod replicas
+  revisionHistoryLimit: 10     # Number of old ReplicaSets to retain
+  progressDeadlineSeconds: 600 # Max time Deployment waits for progress before marking failed
+  strategy:                    # Deployment update strategy
+    type: RollingUpdate        # Type can be RollingUpdate or Recreate
+    rollingUpdate:
+      maxUnavailable: 1        # Max pods that can be unavailable during update
+      maxSurge: 1              # Max extra pods that can be created during update
+
+  selector:                    # 5. Selector tells Deployment which Pods to manage
+    matchLabels:
+      app: my-app
+    matchExpressions:          # Optional: advanced label selection
+      - key: environment
+        operator: In
+        values:
+          - dev
+          - prod
+
+  template:                    # 6. Pod template defining Pods for this Deployment
+    metadata:                  # Metadata for Pods
+      labels:
+        app: my-app
+        environment: dev
+      annotations:
+        monitoring: "enabled"
+    spec:                      # Pod spec
+      containers:              # List of containers in Pod
+        - name: my-container
+          image: nginx:1.25.2
+          imagePullPolicy: IfNotPresent  # How image is pulled
+          ports:                      # Ports exposed by container
+            - containerPort: 80
+          env:                        # Environment variables
+            - name: ENV
+              value: "dev"
+          resources:                   # Resource requests and limits
+            requests:
+              memory: "128Mi"
+              cpu: "250m"
+            limits:
+              memory: "256Mi"
+              cpu: "500m"
+          livenessProbe:               # Check if container is alive
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 10
+            periodSeconds: 20
+          readinessProbe:              # Check if container is ready
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          volumeMounts:                # Mount volumes into container
+            - name: config-volume
+              mountPath: /etc/config
+      restartPolicy: Always           # Pod restart policy: Always/Never/OnFailure
+      nodeSelector:                  # Schedule Pod to nodes with these labels
+        disktype: ssd
+      tolerations:                   # Allow Pod to schedule on tainted nodes
+        - key: "key1"
+          operator: "Exists"
+          effect: "NoSchedule"
+      affinity:                      # Optional: Node/Pod scheduling rules
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: disktype
+                    operator: In
+                    values:
+                      - ssd
+      volumes:                        # Volumes available to Pod
+        - name: config-volume
+          configMap:
+            name: my-config
+
+
+---
+
+apiVersion: apps/v1       # Deployment API version
+kind: Deployment          # Type of Kubernetes object
+metadata:
+  name: simple-deployment # Name of the Deployment
+  labels:
+    app: my-app           # Label to identify Pods
+spec:
+  replicas: 2             # Number of Pod replicas
+  selector:
+    matchLabels:
+      app: my-app         # Select Pods with this label
+  template:
+    metadata:
+      labels:
+        app: my-app       # Labels applied to Pods
+    spec:
+      containers:
+        - name: nginx-container  # Container name
+          image: nginx:1.25.2    # Container image
+          ports:
+            - containerPort: 80  # Expose port 80

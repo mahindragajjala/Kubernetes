@@ -1,0 +1,164 @@
+# -------------------------
+# Namespace: Development
+# -------------------------
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: dev
+  labels:
+    environment: dev
+    team: developers
+    purpose: development
+    compliance: non-prod
+    tier: application
+  annotations:
+    description: "Development environment namespace for testing new features"
+    contact: "dev-team@example.com"
+    createdBy: "Platform Team"
+    costCenter: "R&D-DEV"
+
+---
+# -------------------------
+# Namespace: QA
+# -------------------------
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: qa
+  labels:
+    environment: qa
+    team: testers
+    purpose: testing
+    compliance: staging
+    tier: application
+  annotations:
+    description: "QA environment namespace for integration & regression testing"
+    contact: "qa-team@example.com"
+    createdBy: "Platform Team"
+    costCenter: "R&D-QA"
+
+---
+# -------------------------
+# Namespace: Production
+# -------------------------
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: prod
+  labels:
+    environment: prod
+    team: operations
+    purpose: production
+    compliance: critical
+    tier: application
+  annotations:
+    description: "Production namespace hosting customer-facing apps"
+    contact: "ops-team@example.com"
+    createdBy: "Platform Team"
+    costCenter: "R&D-PROD"
+
+---
+# -------------------------
+# Namespace: Monitoring
+# -------------------------
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: monitoring
+  labels:
+    environment: infra
+    team: sre
+    purpose: monitoring
+    compliance: shared
+    tier: infrastructure
+  annotations:
+    description: "Namespace dedicated to Prometheus, Grafana, and logging tools"
+    contact: "infra-team@example.com"
+    createdBy: "Platform Team"
+    costCenter: "SRE-MONITORING"
+
+---
+# -------------------------
+# Workload: Frontend (Dev)
+# -------------------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  namespace: dev
+  labels:
+    app: frontend
+    tier: web
+    environment: dev
+    version: v1
+    managed-by: kubectl
+  annotations:
+    owner: "team-dev"
+    description: "Frontend application for Dev environment"
+    repository: "https://git.example.com/dev/frontend"
+    support: "dev-team@example.com"
+
+---
+# -------------------------
+# Workload: Backend (QA)
+# -------------------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: qa
+  labels:
+    app: backend
+    tier: api
+    environment: qa
+    version: v1
+    managed-by: helm
+  annotations:
+    owner: "team-qa"
+    description: "Backend service for QA testing"
+    repository: "https://git.example.com/qa/backend"
+    support: "qa-team@example.com"
+
+---
+# -------------------------
+# Workload: Database (Prod)
+# -------------------------
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: ecommerce-db
+  namespace: prod
+  labels:
+    app: database
+    tier: data
+    environment: prod
+    version: v2
+    managed-by: operator
+  annotations:
+    owner: "team-ops"
+    description: "High Availability Database for Production"
+    repository: "https://git.example.com/prod/db"
+    support: "ops-team@example.com"
+    backupPolicy: "daily"
+
+---
+# -------------------------
+# Workload: Prometheus (Monitoring)
+# -------------------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prometheus
+  namespace: monitoring
+  labels:
+    app: prometheus
+    purpose: monitoring
+    environment: infra
+    tier: monitoring
+    managed-by: helm
+  annotations:
+    owner: "infra-team"
+    description: "Prometheus for metrics collection"
+    repository: "https://git.example.com/infra/prometheus"
+    support: "sre-team@example.com"
+    alert-policy: "critical"

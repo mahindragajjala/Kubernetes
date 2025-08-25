@@ -1,0 +1,89 @@
+deployment-commands:
+  basic:
+    - name: "List all Deployments"
+      command: "kubectl get deploy"
+      variations:
+        - "kubectl get deploy -o wide"
+        - "kubectl get deploy --all-namespaces"
+
+    - name: "Describe a Deployment"
+      command: "kubectl describe deploy <deployment-name>"
+
+    - name: "Create a Deployment"
+      command: "kubectl apply -f deployment.yaml"
+      alternative: "kubectl create -f deployment.yaml"
+
+    - name: "Delete a Deployment"
+      command: "kubectl delete deploy <deployment-name>"
+      alternative: "kubectl delete -f deployment.yaml"
+
+    - name: "View Deployment YAML"
+      command: "kubectl get deploy <deployment-name> -o yaml"
+
+  intermediate:
+    - name: "Scale Deployment"
+      commands:
+        - "kubectl scale deploy <deployment-name> --replicas=5"
+        - "kubectl scale -f deployment.yaml --replicas=3"
+
+    - name: "Update Deployment image (Rolling Update)"
+      command: |
+        kubectl set image deploy/<deployment-name> <container-name>=nginx:1.25
+
+    - name: "View ReplicaSets managed by Deployment"
+      command: "kubectl get rs --selector=app=myapp"
+
+    - name: "View Pods managed by Deployment"
+      commands:
+        - "kubectl get pods -l app=myapp"
+        - "kubectl describe deploy <deployment-name> | grep Pod"
+
+    - name: "Pause a Deployment"
+      command: "kubectl rollout pause deploy/<deployment-name>"
+
+    - name: "Resume a Deployment"
+      command: "kubectl rollout resume deploy/<deployment-name>"
+
+  advanced:
+    - name: "Check Deployment rollout status"
+      command: "kubectl rollout status deploy/<deployment-name>"
+
+    - name: "History of rollouts"
+      command: "kubectl rollout history deploy/<deployment-name>"
+
+    - name: "Rollback to previous revision"
+      command: "kubectl rollout undo deploy/<deployment-name>"
+
+    - name: "Rollback to a specific revision"
+      command: "kubectl rollout undo deploy/<deployment-name> --to-revision=2"
+
+    - name: "Patch a Deployment"
+      command: |
+        kubectl patch deploy <deployment-name> -p '{
+          "spec":{"replicas":10}
+        }'
+
+    - name: "Edit a Deployment (live edit)"
+      command: "kubectl edit deploy <deployment-name>"
+
+    - name: "Apply labels to Deployment"
+      command: "kubectl label deploy <deployment-name> environment=production"
+
+    - name: "Filter Deployments with label selector"
+      commands:
+        - "kubectl get deploy -l app=frontend"
+        - "kubectl delete deploy -l env=dev"
+
+    - name: "View Deployment events"
+      command: "kubectl get events --sort-by='.metadata.creationTimestamp'"
+
+    - name: "Get Deployment resource usage"
+      commands:
+        - "kubectl top deploy <deployment-name>"
+        - "kubectl top deploy"
+
+    - name: "Replace Deployment with new config"
+      command: "kubectl replace -f deployment.yaml"
+
+    - name: "Force delete Deployment and its ReplicaSets/Pods"
+      command: "kubectl delete deploy <deployment-name> --cascade=foreground"

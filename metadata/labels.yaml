@@ -1,0 +1,30 @@
+name → unique name of the object (ID card name).
+Shortcut: N → Name
+Example: "my-replicaset"
+namespace → grouping bondary (like department in a company).
+Shortcut: NS → Namespace
+Example: "production"
+labels → key-value pairs to select/manage objects.
+Shortcut: L → Labels
+Example: app: myapp, tier: frontend
+annotations → key-value notes for extra info (not selectors).
+Shortcut: A → Annotations
+Example: description: "owned by team devops"
+uid → unique auto-generated ID.
+Shortcut: U → UID
+resourceVersion → version of the object (used in updates).
+Shortcut: R → Resource version
+generation → version ofthe spec (changes when spec changes).
+Shortcut: G → Generation
+creationTimestamp → when object created.
+Shortcut: CT → Creation Time
+deletionTimestamp → when object is scheduled for deletion.
+Shortcut: DT → Deletion Time
+finalizers → cleanup hooks before object removal.
+Shortcut: F → Finalizer
+ownerReferences → links to parent object (like ReplicaSet → Deployment).
+Shortcut: O → Owner
+
+
+AT-EVM
+A - APP 
